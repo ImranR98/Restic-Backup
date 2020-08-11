@@ -21,6 +21,10 @@ serverCommand() {
     ssh "$SERVERUSERNAME"@"$TARGETDOMAIN" -p "$TARGETPORT" "${1}"
 }
 
+resticAskPass() {
+    if [ -z "$RESTIC_PASSWORD" ]; then echo "Enter the backup password: " && read -s RESTIC_PASSWORD; fi
+}
+
 resticCommand() {
     if [ -z "$B2_ACCOUNT_ID" ] || [ -z "$B2_ACCOUNT_KEY" ] || [ -z "$TARGETBUCKET" ] || [ -z "$REMOTEPATH" ] || [ -z "$LOCALPATH" ]; then echo "One or more required variables are missing" >&2; exit 1; fi
     if [ -z "$RESTIC_PASSWORD" ]; then echo "Enter the backup password: " && read -s RESTIC_PASSWORD; fi

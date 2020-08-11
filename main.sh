@@ -8,6 +8,8 @@ echo 'Testing Server Connection...'
 serverFindConnection
 echo 'Connection found.'
 echo ''
+resticAskPass
+echo ''
 echo "Pick an action: "
 echo '1) Backup'
 echo '2) Forget'
