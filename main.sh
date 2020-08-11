@@ -10,9 +10,11 @@ echo 'Connection found.'
 echo ''
 echo "Pick an action: "
 echo '1) Backup'
-echo '2) List Backup Snapshots'
-echo '3) Check Backup Integrity'
-echo '4) Freeform'
+echo '2) Forget'
+echo '3) Prune'
+echo '4) List Backup Snapshots'
+echo '5) Check Backup Integrity'
+echo '6) Freeform'
 echo '*) Exit'
 
 read choice	
