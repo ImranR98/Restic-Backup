@@ -33,3 +33,7 @@ Run `main.sh` and pick a command.
 
 ## TODO
 - Add `restore` command.
+
+Test:
+- Remote backup
+- Local backup

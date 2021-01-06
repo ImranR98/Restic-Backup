@@ -11,15 +11,13 @@ if [ $remoteInput == 'y' ] || [ $remoteInput == 'Y' ]; then
 fi
 
 # Determine connection to remote server if needed
-if [ $REMOTE -eq 1 ]; then
+if [ "$REMOTE" == 1 ]; then
 	echo 'Server Restic Backup'
 	echo 'Testing Server Connection...'
 	serverFindConnection
 	echo 'Connection found.'
-	echo ''
 else
 	echo 'Local Restic Backup'
-	echo ''
 fi
 
 # Ask for Restic password if env. var. not provided
@@ -43,7 +41,7 @@ while [ true ]; do
 		INITCOMMAND="init"
 		DATE="$(date +"%Y-%m-%d-%H-%M")"
 
-		if [ $REMOTE -eq 1 ]; then
+		if [ "$REMOTE" == 1 ]; then
 			BACKUPCOMMAND = "backup $SERVERPATH -v $BACKUPOPTIONS"
 			resticRemoteCommand "$INITCOMMAND" 2>/dev/null
 			resticRemoteCommand "$BACKUPCOMMAND" 1
@@ -54,7 +52,7 @@ while [ true ]; do
 		fi
 		;;
 	2) # Forget
-		if [ $REMOTE -eq 1 ]; then
+		if [ "$REMOTE" == 1 ]; then
 			resticRemoteCommand "forget ${RETENTIONPOLICY}"
 		else
 			resticLocalCommand "forget ${RETENTIONPOLICY}"
@@ -63,30 +61,30 @@ while [ true ]; do
 	3) #Prune (if remote, run asynchronously and give option to view logs)
 		PRUNECOMMAND="prune"
 		DATE="$(date +"%Y-%m-%d-%H-%M")"
-		if [ $REMOTE -eq 1 ]; then
+		if [ "$REMOTE" == 1 ]; then
 			resticRemoteCommand "$PRUNECOMMAND" 1
 		else
 			resticLocalCommand "$PRUNECOMMAND"
 		fi
 		;;
-	4)
-		if [ $REMOTE -eq 1 ]; then
-			resticRemoteCommand "snapshots"
+	4) # List
+		if [ "$REMOTE" == 1 ]; then
+			resticRemoteCommand "snapshots" 1
 		else
 			resticLocalCommand "snapshots"
 		fi
 		;;
-	5)
-		if [ $REMOTE -eq 1 ]; then
+	5) # Check
+		if [ "$REMOTE" == 1 ]; then
 			resticRemoteCommand "check"
 		else
 			resticLocalCommand "check"
 		fi
 		;;
-	6)
+	6) # Freeform
 		echo 'Enter the Restic command: '
 		read RC
-		if [ $REMOTE -eq 1 ]; then
+		if [ "$REMOTE" == 1 ]; then
 			resticRemoteCommand "${RC}"
 		else
 			resticLocalCommand "${RC}"

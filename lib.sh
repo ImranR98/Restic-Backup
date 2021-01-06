@@ -56,8 +56,8 @@ serverCommand() {
 resticRemoteCommand() {
     resticEnsureVars
     resticAskPass
-    COMMAND="export B2_ACCOUNT_ID=$B2_ACCOUNT_ID ; export B2_ACCOUNT_KEY=$B2_ACCOUNT_KEY ; export RESTIC_PASSWORD=$RESTIC_PASSWORD ; restic --repo b2:$TARGETBUCKET:$REMOTEPATH ${1};"
-    if [ ${2} -eq 1 ]; then
+    COMMAND="export B2_ACCOUNT_ID=$B2_ACCOUNT_ID ; export B2_ACCOUNT_KEY=$B2_ACCOUNT_KEY ; export RESTIC_PASSWORD=$RESTIC_PASSWORD ; restic --repo b2:$TARGETBUCKET:$REMOTEPATH ${1}"
+    if [ "${2}" == 1 ]; then
         DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
         COMMAND="$COMMAND > ~/restic-command-$DATE.log 2>&1"
         serverCommand "$COMMAND" &
