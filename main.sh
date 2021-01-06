@@ -69,7 +69,7 @@ while [ true ]; do
 		;;
 	4) # List
 		if [ "$REMOTE" == 1 ]; then
-			resticRemoteCommand "snapshots" 1
+			resticRemoteCommand "snapshots"
 		else
 			resticLocalCommand "snapshots"
 		fi
