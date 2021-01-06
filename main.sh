@@ -3,13 +3,29 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 source "$HERE"/vars.sh
 source "$HERE"/lib.sh
 
-echo 'Server Restic Backup'
-echo 'Testing Server Connection...'
-serverFindConnection
-echo 'Connection found.'
-echo ''
+# Ask if Restic should run from remote server
+echo "Connect to remote server? Y/N"
+read remoteInput
+if [ $remoteInput == 'y' ] || [ $remoteInput == 'Y' ]; then
+	REMOTE=1
+fi
+
+# Determine connection to remote server if needed
+if [ $REMOTE -eq 1 ]; then
+	echo 'Server Restic Backup'
+	echo 'Testing Server Connection...'
+	serverFindConnection
+	echo 'Connection found.'
+	echo ''
+else
+	echo 'Local Restic Backup'
+	echo ''
+fi
+
+# Ask for Restic password if env. var. not provided
 resticAskPass
 
+# Present choices on loop
 while [ true ]; do
 	echo ''
 	echo "Pick an action: "
@@ -19,41 +35,65 @@ while [ true ]; do
 	echo '4) List Backup Snapshots'
 	echo '5) Check Backup Integrity'
 	echo '6) Freeform'
-	echo '*) Exit'	
+	echo '*) Exit'
 
-	read choice	
-	case $choice in	
-		1)
-			DATE="$(date +"%Y-%m-%d-%H-%M")"
-	    	resticCommand "init"  2>/dev/null
-	    	resticCommand "backup $LOCALPATH -v --exclude \".stversions\" > ~/restic-backup-$DATE.log" &
-			echo "Command is being run asynchronously on the Server, with output saved in the home directory. Attempt to print output? Y/N"
-			read printOutput
-			if [ $printOutput == 'y' ] || [ $printOutput == 'Y' ]; then sleep 3; serverCommand "tail -f ~/restic-backup-$DATE.log"; fi
-			;;	
-		2)
-			resticCommand "forget ${RETENTIONPOLICY}"
-			;;
-		3)
-			DATE="$(date +"%Y-%m-%d-%H-%M")"
-			resticCommand "prune > ~/restic-prune-$DATE.log" &
-			echo "Command is being run asynchronously on the Server, with output saved in the home directory. Attempt to print output? Y/N"
-			read printOutput
-			if [ $printOutput == 'y' ] || [ $printOutput == 'Y' ]; then sleep 3; serverCommand "tail -f ~/restic-prune-$DATE.log"; fi
-			;;	
-		4)
-			resticCommand "snapshots"
-			;;		
-		5)
-			resticCommand "check"
-			;;	
-		6)
-			echo 'Enter the Restic command: '
-			read RC
-			resticCommand "${RC}"
-			;;		
-		*)
-			exit
-			;;
+	read choice
+	case $choice in
+	1) # Backup (if remote, run asynchronously and give option to view logs)
+		INITCOMMAND="init"
+		DATE="$(date +"%Y-%m-%d-%H-%M")"
+
+		if [ $REMOTE -eq 1 ]; then
+			BACKUPCOMMAND = "backup $SERVERPATH -v $BACKUPOPTIONS"
+			resticRemoteCommand "$INITCOMMAND" 2>/dev/null
+			resticRemoteCommand "$BACKUPCOMMAND" 1
+		else
+			BACKUPCOMMAND = "backup $LOCALPATH -v $BACKUPOPTIONS"
+			resticLocalCommand "$INITCOMMAND" 2>/dev/null
+			resticLocalCommand "$BACKUPCOMMAND"
+		fi
+		;;
+	2) # Forget
+		if [ $REMOTE -eq 1 ]; then
+			resticRemoteCommand "forget ${RETENTIONPOLICY}"
+		else
+			resticLocalCommand "forget ${RETENTIONPOLICY}"
+		fi
+		;;
+	3) #Prune (if remote, run asynchronously and give option to view logs)
+		PRUNECOMMAND="prune"
+		DATE="$(date +"%Y-%m-%d-%H-%M")"
+		if [ $REMOTE -eq 1 ]; then
+			resticRemoteCommand "$PRUNECOMMAND" 1
+		else
+			resticLocalCommand "$PRUNECOMMAND"
+		fi
+		;;
+	4)
+		if [ $REMOTE -eq 1 ]; then
+			resticRemoteCommand "snapshots"
+		else
+			resticLocalCommand "snapshots"
+		fi
+		;;
+	5)
+		if [ $REMOTE -eq 1 ]; then
+			resticRemoteCommand "check"
+		else
+			resticLocalCommand "check"
+		fi
+		;;
+	6)
+		echo 'Enter the Restic command: '
+		read RC
+		if [ $REMOTE -eq 1 ]; then
+			resticRemoteCommand "${RC}"
+		else
+			resticLocalCommand "${RC}"
+		fi
+		;;
+	*)
+		exit
+		;;
 	esac
 done
