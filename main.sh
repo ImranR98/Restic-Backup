@@ -42,11 +42,11 @@ while [ true ]; do
 		DATE="$(date +"%Y-%m-%d-%H-%M")"
 
 		if [ "$REMOTE" == 1 ]; then
-			BACKUPCOMMAND = "backup $SERVERPATH -v $BACKUPOPTIONS"
+			BACKUPCOMMAND="backup $SERVERPATH -v $BACKUPOPTIONS"
 			resticRemoteCommand "$INITCOMMAND" 2>/dev/null
 			resticRemoteCommand "$BACKUPCOMMAND" 1
 		else
-			BACKUPCOMMAND = "backup $LOCALPATH -v $BACKUPOPTIONS"
+			BACKUPCOMMAND="backup $LOCALPATH -v $BACKUPOPTIONS"
 			resticLocalCommand "$INITCOMMAND" 2>/dev/null
 			resticLocalCommand "$BACKUPCOMMAND"
 		fi
