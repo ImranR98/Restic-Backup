@@ -1,4 +1,4 @@
-# Server-Restic-Backup
+# Restic-Backup
 Shell scripts to automate backup of a folder on a remote server to a Backblaze B2 bucket using Restic.
 
 ## Setup
