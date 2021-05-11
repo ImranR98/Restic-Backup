@@ -1,5 +1,5 @@
-# Server-Restic-Backup
-Shell scripts to automate backup of a local or remote folder to a Backblaze B2 bucket using Restic.
+# Restic-Backup
+Shell scripts to automate backup of a folder to a Backblaze B2 bucket using Restic.
 
 ## Environment Variables
 Copy or rename the `vars.template.sh` file to `vars.sh`, then fill in the empty variables:
@@ -34,7 +34,3 @@ Run `main.sh` and pick a command.
 
 ## TODO
 - Add `restore` command.
-
-Test:
-- Remote backup
-- Local backup
