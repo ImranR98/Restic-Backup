@@ -26,6 +26,7 @@ These can be left empty if the remote option is not used.
 - Prune - Runs a `prune` command to actually delete all snapshots that are marked for deletion, as well as any invalid snapshots. Because this command takes along time to run, it is run asynchronously on the server and output is sent to a file in the server's home directory.
 - List Backup Snapshots - Lists all backup snapshots for the configured Restic repo on BackBlaze.
 - Check Backup Integrity - Checks to see if the currently backed up snapshots are valid.
+- Mount - Mounts the repo to ~/resticBackup.
 - Freeform - Allows you to run any other Restic command, such as `prune`, on the Server, using the configuration in `vars.sh`.
 
 ## Usage

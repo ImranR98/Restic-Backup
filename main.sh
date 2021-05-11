@@ -32,7 +32,8 @@ while [ true ]; do
 	echo '3) Prune'
 	echo '4) List Backup Snapshots'
 	echo '5) Check Backup Integrity'
-	echo '6) Freeform'
+	echo '6) Mount'
+	echo '7) Freeform'
 	echo '*) Exit'
 
 	read choice
@@ -81,7 +82,15 @@ while [ true ]; do
 			resticLocalCommand "check"
 		fi
 		;;
-	6) # Freeform
+	6) # Mount
+		if [ ! -d ~/resticBackup ]; then mkdir ~/resticBackup; fi
+		if [ "$REMOTE" == 1 ]; then
+			resticRemoteCommand "mount /home/$(whoami)/resticBackup" && ~/resticBackup
+		else
+			echo "Not available for remote server."
+		fi
+		;;
+	7) # Freeform
 		echo 'Enter the Restic command: '
 		read RC
 		if [ "$REMOTE" == 1 ]; then
