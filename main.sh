@@ -85,9 +85,9 @@ while [ true ]; do
 	6) # Mount
 		if [ ! -d ~/resticBackup ]; then mkdir ~/resticBackup; fi
 		if [ "$REMOTE" == 1 ]; then
-			resticRemoteCommand "mount /home/$(whoami)/resticBackup" && ~/resticBackup
-		else
 			echo "Not available for remote server."
+		else
+			resticLocalCommand "mount /home/$(whoami)/resticBackup" && ~/resticBackup
 		fi
 		;;
 	7) # Freeform
