@@ -3,22 +3,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 source "$HERE"/vars.sh
 source "$HERE"/lib.sh
 
-# Ask if Restic should run from remote server
-echo "Connect to remote server? Y/N"
-read remoteInput
-if [ $remoteInput == 'y' ] || [ $remoteInput == 'Y' ]; then
-	REMOTE=1
-fi
-
-# Determine connection to remote server if needed
-if [ "$REMOTE" == 1 ]; then
-	echo 'Server Restic Backup'
-	echo 'Testing Server Connection...'
-	serverFindConnection
-	echo 'Connection found.'
-else
-	echo 'Local Restic Backup'
-fi
+echo 'Restic Backup'
 
 # Ask for Restic password if env. var. not provided
 resticAskPass
@@ -38,66 +23,35 @@ while [ true ]; do
 
 	read choice
 	case $choice in
-	1) # Backup (if remote, run asynchronously and give option to view logs)
+	1) # Backup
 		INITCOMMAND="init"
 		DATE="$(date +"%Y-%m-%d-%H-%M")"
-
-		if [ "$REMOTE" == 1 ]; then
-			BACKUPCOMMAND="backup $SERVERPATH -v $BACKUPOPTIONS"
-			resticRemoteCommand "$INITCOMMAND" 2>/dev/null
-			resticRemoteCommand "$BACKUPCOMMAND" 1
-		else
-			BACKUPCOMMAND="backup $LOCALPATH -v $BACKUPOPTIONS"
-			resticLocalCommand "$INITCOMMAND" 2>/dev/null
-			resticLocalCommand "$BACKUPCOMMAND"
-		fi
+		BACKUPCOMMAND="backup $LOCALPATH -v $BACKUPOPTIONS"
+		resticLocalCommand "$INITCOMMAND" 2>/dev/null
+		resticLocalCommand "$BACKUPCOMMAND"
 		;;
 	2) # Forget
-		if [ "$REMOTE" == 1 ]; then
-			resticRemoteCommand "forget ${RETENTIONPOLICY}"
-		else
-			resticLocalCommand "forget ${RETENTIONPOLICY}"
-		fi
+		resticLocalCommand "forget ${RETENTIONPOLICY}"
 		;;
-	3) #Prune (if remote, run asynchronously and give option to view logs)
+	3) #Prune
 		PRUNECOMMAND="prune"
 		DATE="$(date +"%Y-%m-%d-%H-%M")"
-		if [ "$REMOTE" == 1 ]; then
-			resticRemoteCommand "$PRUNECOMMAND" 1
-		else
-			resticLocalCommand "$PRUNECOMMAND"
-		fi
+		resticLocalCommand "$PRUNECOMMAND"
 		;;
 	4) # List
-		if [ "$REMOTE" == 1 ]; then
-			resticRemoteCommand "snapshots"
-		else
-			resticLocalCommand "snapshots"
-		fi
+		resticLocalCommand "snapshots"
 		;;
 	5) # Check
-		if [ "$REMOTE" == 1 ]; then
-			resticRemoteCommand "check"
-		else
-			resticLocalCommand "check"
-		fi
+		resticLocalCommand "check"
 		;;
 	6) # Mount
 		if [ ! -d ~/resticBackup ]; then mkdir ~/resticBackup; fi
-		if [ "$REMOTE" == 1 ]; then
-			echo "Not available for remote server."
-		else
-			resticLocalCommand "mount /home/$(whoami)/resticBackup" && ~/resticBackup
-		fi
+		resticLocalCommand "mount /home/$(whoami)/resticBackup" && ~/resticBackup
 		;;
 	7) # Freeform
 		echo 'Enter the Restic command: '
 		read RC
-		if [ "$REMOTE" == 1 ]; then
-			resticRemoteCommand "${RC}"
-		else
-			resticLocalCommand "${RC}"
-		fi
+		resticLocalCommand "${RC}"
 		;;
 	*)
 		exit
