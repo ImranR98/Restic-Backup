@@ -13,16 +13,13 @@ Copy or rename the `vars.template.sh` file to `vars.sh`, then fill in the empty 
 - `RETENTIONPOLICY` - Options to use when running `forget` the command.
 
 ## Actions
-- Backup - Backs up the folder on the Server to the Restic repo on BackBlaze, according to the configuration in `vars.sh`. Creates a backup if one does not exist. Because this command takes along time to run, it is run asynchronously on the server and output is sent to a file in the server's home directory.
+- Backup - Backs up the folder to the Restic repo on BackBlaze, according to the configuration in `vars.sh`. Creates a backup if one does not exist, else updates the existing backup.
 - Forget - Runs a `forget` command to mark certain snapshots for deletion. Uses the `RETENTIONPOLICY` from `vars.sh` to target the snapshots to be deleted.
-- Prune - Runs a `prune` command to actually delete all snapshots that are marked for deletion, as well as any invalid snapshots. Because this command takes along time to run, it is run asynchronously on the server and output is sent to a file in the server's home directory.
+- Prune - Runs a `prune` command to actually delete all snapshots that are marked for deletion, as well as any invalid snapshots.
 - List Backup Snapshots - Lists all backup snapshots for the configured Restic repo on BackBlaze.
 - Check Backup Integrity - Checks to see if the currently backed up snapshots are valid.
-- Mount - Mounts the repo to ~/resticBackup.
+- Mount - Mounts the repo to ~/resticBackup. This can be used to restore data.
 - Freeform - Allows you to run any other Restic command, such as `prune`, on the Server, using the configuration in `vars.sh`.
 
 ## Usage
 Run `main.sh` and pick a command.
-
-## TODO
-- Add `restore` command.
