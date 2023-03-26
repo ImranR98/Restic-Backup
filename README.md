@@ -12,6 +12,8 @@ Copy or rename the `vars.template.sh` file to `vars.sh`, then fill in the empty 
 - `REMOTEPATH` - Remote path for where the backup should be stored in the Restic repo on B2.
 - `RETENTIONPOLICY` - Options to use when running `forget` the command.
 
+You can place `vars.sh` at an alternative path and provide it as the first argument to the script.
+
 ## Actions
 - Backup - Backs up the folder to the Restic repo on BackBlaze, according to the configuration in `vars.sh`. Creates a backup if one does not exist, else updates the existing backup.
 - Forget - Runs a `forget` command to mark certain snapshots for deletion. Uses the `RETENTIONPOLICY` from `vars.sh` to target the snapshots to be deleted.

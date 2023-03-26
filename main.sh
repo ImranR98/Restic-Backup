@@ -1,6 +1,10 @@
 # Import vars. and funcs.
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-source "$HERE"/vars.sh
+if [ -n "$1" ]; then
+	source "$1"
+else
+	source "$HERE"/vars.sh
+fi
 source "$HERE"/lib.sh
 
 echo 'Restic Backup'
