@@ -20,16 +20,22 @@ serverFindConnection() {
     fi
 }
 
-# Ask for a restic password and store it in an env. var. if not already stored 
+# Ask for a restic password and store it in an env. var. if not already stored
 resticAskPass() {
     if [ -z "$RESTIC_PASSWORD" ]; then echo "Enter the backup password: " && read -s RESTIC_PASSWORD; fi
 }
 
 # Check to see if all env. vars. needed for a Restic command to run (excluding the password) exist
 resticEnsureVars() {
-    if [ -z "$B2_ACCOUNT_ID" ] || [ -z "$B2_ACCOUNT_KEY" ] || [ -z "$TARGETBUCKET" ] || [ -z "$REMOTEPATH" ] || [ -z "$LOCALPATH" ]; then
+    if [ -z "$REMOTEPATH" ] || [ -z "$LOCALPATH" ]; then
         echo "One or more required variables are missing" >&2
         exit 1
+    fi
+    if [ -n "$TARGETBUCKET" ]; then
+        if [ -z "$B2_ACCOUNT_ID" ] || [ -z "$B2_ACCOUNT_KEY" ]; then
+            echo "One or more required variables are missing" >&2
+            exit 1
+        fi
     fi
 }
 
@@ -40,7 +46,11 @@ resticLocalCommand() {
     export B2_ACCOUNT_ID=$B2_ACCOUNT_ID
     export B2_ACCOUNT_KEY=$B2_ACCOUNT_KEY
     export RESTIC_PASSWORD=$RESTIC_PASSWORD
-    restic --repo b2:$TARGETBUCKET:$REMOTEPATH ${1}
+    repo="$REMOTEPATH"
+    if [ -n "$TARGETBUCKET" ]; then
+        repo="b2:$TARGETBUCKET:$REMOTEPATH"
+    fi
+    restic --repo "$repo" ${1}
 }
 
 # Run a command on the remote server if all required env. vars exist
@@ -56,7 +66,7 @@ serverCommand() {
 resticRemoteCommand() {
     resticEnsureVars
     resticAskPass
-    COMMAND="export B2_ACCOUNT_ID=$B2_ACCOUNT_ID ; export B2_ACCOUNT_KEY=$B2_ACCOUNT_KEY ; export RESTIC_PASSWORD=$RESTIC_PASSWORD ; restic --repo b2:$TARGETBUCKET:$REMOTEPATH ${1}"
+    COMMAND="export B2_ACCOUNT_ID=$B2_ACCOUNT_ID ; export B2_ACCOUNT_KEY=$B2_ACCOUNT_KEY ; export RESTIC_PASSWORD=$RESTIC_PASSWORD ; repo="$REMOTEPATH" ;  if [ -n "$TARGETBUCKET" ] ; then repo="b2:$TARGETBUCKET:$REMOTEPATH" ; fi ; restic --repo "$repo" ${1}"
     if [ "${2}" == 1 ]; then
         DATE="$(date +"%Y-%m-%d-%H-%M-%S")"
         COMMAND="$COMMAND > ~/restic-command-$DATE.log 2>&1"
