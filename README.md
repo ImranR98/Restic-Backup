@@ -21,7 +21,7 @@ You can place `vars.sh` at an alternative path and provide it as the first argum
 - List Backup Snapshots - Lists all backup snapshots for the configured Restic repo on BackBlaze.
 - Check Backup Integrity - Checks to see if the currently backed up snapshots are valid.
 - Mount - Mounts the repo to ~/resticBackup. This can be used to restore data.
-- Freeform - Allows you to run any other Restic command, such as `prune`, on the Server, using the configuration in `vars.sh`.
+- Freeform - Allows you to run any other Restic command, such as `prune`, using the configuration in `vars.sh`.
 
 ## Usage
 Run `main.sh` and pick a command.
